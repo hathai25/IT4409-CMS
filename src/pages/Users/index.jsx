@@ -1,20 +1,18 @@
 import {Button, Col, Image, Input, notification, Row, Select, Table, Tag} from "antd";
 import {useEffect, useState} from "react";
-import {getAllProducts} from "../../services/product.service.js";
-import {formatCurrency} from "../../utils/string.js";
-import {DeleteFilled, EditFilled, PlusOutlined} from "@ant-design/icons";
+import {PlusOutlined} from "@ant-design/icons";
 import {EditIcon} from "../../assets/Icons/EditIcon.jsx";
 import {DeleteIcon} from "../../assets/Icons/DeleteIcon.jsx";
 import DeleteModal from "../../components/Modal/DeleteModal/index.jsx";
-import EditProductForm from "./EditUserForm/index.jsx";
 import {LockIcon} from "../../assets/Icons/LockIcon.jsx";
 import {UnlockIcon} from "../../assets/Icons/UnlockIcon.jsx";
 import LockModal from "../../components/Modal/LockModal/index.jsx";
 import UnlockModal from "../../components/Modal/UnlockModal/index.jsx";
 import EditUserForm from "./EditUserForm/index.jsx";
+import {deleteUserInfo, getAllUser} from "../../services/user.service.js";
 
 const Users = () => {
-  const [products, setProducts] = useState([]);
+  const [users, setUsers] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [filteredData, setFilteredData] = useState([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -24,10 +22,11 @@ const Users = () => {
   const [rowData, setRowData] = useState(null);
   const [isEdit, setIsEdit] = useState(false);
 
-  const fetchProducts = () => {
+  const fetchUsers = () => {
     try {
-      getAllProducts().then((res) => {
-        setProducts(res?.data?.products)
+      getAllUser().then((res) => {
+        console.log({res})
+        setUsers(res?.data?.data?.items)
       })
       console.log("fetched")
     } catch (error) {
@@ -41,40 +40,60 @@ const Users = () => {
   const handleEdit = (data) => {
     console.log('ok', data)
     setShowEditModal(false)
-    fetchProducts()
+    fetchUsers()
   }
 
   const handleDelete = () => {
-    console.log('ok')
-    setShowDeleteModal(false)
-    fetchProducts()
+    try {
+      deleteUserInfo({id: rowData?.id}).then((res) => {
+        console.log({res})
+        if (res?.status === 200) {
+          notification.success({
+            message: "Success",
+            description: "Deleted successfully"
+          })
+            setShowDeleteModal(false)
+            fetchUsers()
+        } else {
+          notification.error({
+            message: "Error",
+            description: "Can't delete user"
+          })
+        }
+
+      })
+    } catch (error) {
+      notification.error({
+        message: "Error",
+        description: "Can't delete user"
+      })
+      setShowDeleteModal(false)
+    }
   }
 
   const handleLock = () => {
     console.log('ok')
     setShowLockModal(false)
-    fetchProducts()
+    fetchUsers()
   }
 
   const handleUnlock = () => {
     console.log('ok')
     setShowUnlockModal(false)
-    fetchProducts()
+    fetchUsers()
   }
 
 
   useEffect(() => {
-    fetchProducts()
+    fetchUsers()
   }, [])
 
   const handleSearch = (e) => {
     const value = e.target.value;
     setSearchText(value);
-
-    const filteredDataSource = products.filter((item) =>
-      item.title.toLowerCase().includes(value.toLowerCase())
+    const filteredDataSource = users.filter((item) =>
+      item.email.toLowerCase().includes(value.toLowerCase())
     );
-
     setFilteredData(filteredDataSource);
   };
 
@@ -83,7 +102,7 @@ const Users = () => {
       <Row justify={"space-between"} style={{margin: "2rem 0"}}>
         <Col span={12}>
           <Input
-            placeholder="Search by title"
+            placeholder="Search by email"
             size="large"
             onChange={handleSearch}
           />
@@ -104,7 +123,7 @@ const Users = () => {
       </Row>
 
       <Table
-        dataSource={filteredData.length > 0 ? filteredData : products}
+        dataSource={filteredData.length >= 0 && searchText !== '' ? filteredData : users}
         rowKey={(record) => record?.id}
         columns={[
           {
@@ -116,18 +135,18 @@ const Users = () => {
           },
           {
             title: "Username",
-            dataIndex: "title",
-            key: "title",
+            dataIndex: "username",
+            key: "username",
             width: 100,
           },
           {
             title: "Status",
-            dataIndex: "stock",
-            key: "quantity",
+            dataIndex: "status",
+            key: "status",
             width: 50,
             //render tag
             render: (value) => {
-              if (value > 0) {
+              if (!value) {
                 return <Tag color="green">Active</Tag>
               } else {
                 return <Tag color="red">Locked</Tag>
@@ -136,15 +155,21 @@ const Users = () => {
           },
           {
             title: "Avatar",
-            dataIndex: "thumbnail",
-            key: "thumbnail",
-            width: 100,
-            render: (value) => <Image src={value} width={160} height={90}/>
+            dataIndex: "avatar",
+            key: "avatar",
+            width: 200,
+            render: (value) => value ? <Image src={value} width={160} height={90}/> : 'No avatar'
+          },
+          {
+            title: "Email",
+            dataIndex: "email",
+            key: "emails",
+            width: 300,
           },
           {
             title: "Phone",
-            dataIndex: "description",
-            key: "description",
+            dataIndex: "phone",
+            key: "phone",
             width: 300,
           },
           {
@@ -152,7 +177,7 @@ const Users = () => {
             dataIndex: "price",
             key: "price",
             width: 100,
-            render: (value) => formatCurrency(value)
+            // render: (value) => formatCurrency(value)
           },
           {
             title: 'Action',
@@ -172,7 +197,12 @@ const Users = () => {
                 </>
                 :
                 <>
-                  <span style={{cursor: "pointer"}} onClick={() => setShowDeleteModal(true)}><DeleteIcon style={{marginRight: 8}}/></span>
+                  <span style={{cursor: "pointer"}} onClick={() => {
+                    setShowDeleteModal(true)
+                    setRowData(record)
+                  }}>
+                    <DeleteIcon style={{marginRight: 8}}/>
+                  </span>
                   <span style={{cursor: "pointer"}} onClick={() => setShowUnlockModal(true)}><UnlockIcon/></span>
                 </>
               }
@@ -199,7 +229,6 @@ const Users = () => {
         content={"Are you sure you want to delete this user?"}
         handleDelete={handleDelete}
         handleCancel={() => {
-          console.log('cancel')
           setShowDeleteModal(false)
         }}
       />

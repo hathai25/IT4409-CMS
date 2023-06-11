@@ -1,7 +1,9 @@
 import axios from 'axios';
 import {notification} from "antd";
+import {useNavigate} from "react-router-dom";
 
-const CORE_API = import.meta.env.VITE_PUBLIC_API_BASE_URL;
+// const CORE_API = import.meta.env.VITE_PUBLIC_API_BASE_URL;
+const CORE_API = 'http://localhost:3001';
 
 axios.defaults.headers.common['Accept'] = 'application/json';
 
@@ -24,6 +26,7 @@ const addInterceptor = (instant) => {
   instant.interceptors.response.use(
     async (response) => {
       const {code} = response
+      console.log('response', response)
       if (code === 401 || (code === 500 && !response.config.headers.Authorization)) {
         notification.error({
           message: 'Phiên đăng nhập hết hạn',
@@ -33,7 +36,9 @@ const addInterceptor = (instant) => {
       return response;
     },
     (err) => {
-      if (err.response?.status === 401) {
+        console.log('err', err)
+      if (err.response?.status === 403) {
+        window.location.href = '/login'
         notification.error({
           message: 'Phiên đăng nhập hết hạn',
           description: 'Vui lòng đăng nhập lại',

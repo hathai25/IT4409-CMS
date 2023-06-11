@@ -6,6 +6,7 @@ import {DeleteIcon} from "../../assets/Icons/DeleteIcon.jsx";
 import DeleteModal from "../../components/Modal/DeleteModal/index.jsx";
 import EditCategoryForm from "./EditCategoryForm/index.jsx";
 import {PlusOutlined} from "@ant-design/icons";
+import {createCategory, deleteCategory, getAllCategories, updateCategory} from "../../services/category.service.js";
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
@@ -16,12 +17,11 @@ const Categories = () => {
   const [rowData, setRowData] = useState(null);
   const [isEdit, setIsEdit] = useState(false);
 
-  const fetchProducts = () => {
+  const fetchCategories = () => {
     try {
-      getAllProducts().then((res) => {
-        setCategories(res?.data?.products)
+      getAllCategories().then((res) => {
+        setCategories(res?.data?.data?.items)
       })
-      console.log("fetched")
     } catch (error) {
       notification.error({
         message: "Error",
@@ -30,21 +30,84 @@ const Categories = () => {
     }
   }
 
+  const handleAdd = (data) => {
+    try {
+      createCategory(data).then((res) => {
+        if (res?.status === 201) {
+          notification.success({
+            message: "Success",
+            description: "Category created successfully"
+          })
+          setShowEditModal(false)
+          fetchCategories()
+        } else {
+          notification.error({
+            message: "Error",
+            description: "Can't create category"
+          })
+        }
+      })
+    } catch (error) {
+      notification.error({
+        message: "Error",
+        description: "Can't create category"
+      })
+    }
+  }
+
   const handleEdit = (data) => {
-    console.log('ok', data)
-    setShowEditModal(false)
-    fetchProducts()
+    try {
+      updateCategory(rowData?.id, data).then((res) => {
+        if (res?.status === 201) {
+          notification.success({
+            message: "Success",
+            description: "Category updated successfully"
+          })
+          setShowEditModal(false)
+          fetchCategories()
+        } else {
+          notification.error({
+            message: "Error",
+            description: "Can't update category"
+          })
+        }
+      })
+    } catch (error) {
+      notification.error({
+        message: "Error",
+        description: "Can't update category"
+      })
+    }
   }
 
   const handleDelete = () => {
-    console.log('ok')
-    setShowDeleteModal(false)
-    fetchProducts()
+    try {
+      deleteCategory(rowData?.id).then((res) => {
+        if (res?.status === 201) {
+          notification.success({
+            message: "Success",
+            description: "Category deleted successfully"
+          })
+          setShowEditModal(false)
+          fetchCategories()
+        } else {
+          notification.error({
+            message: "Error",
+            description: "Can't delete category"
+          })
+        }
+      })
+    } catch (error) {
+      notification.error({
+        message: "Error",
+        description: "Can't delete category"
+      })
+    }
   }
 
 
   useEffect(() => {
-    fetchProducts()
+    fetchCategories()
   }, [])
 
   const handleSearch = (e) => {
@@ -52,7 +115,7 @@ const Categories = () => {
     setSearchText(value);
 
     const filteredDataSource = categories.filter((item) =>
-      item.title.toLowerCase().includes(value.toLowerCase())
+      item.name.toLowerCase().includes(value.toLowerCase())
     );
 
     setFilteredData(filteredDataSource);
@@ -85,8 +148,8 @@ const Categories = () => {
       </Row>
 
       <Table
-        dataSource={filteredData.length > 0 ? filteredData : categories}
-        rowKey={(record) => record?.id}
+        dataSource={filteredData.length > 0 && searchText !== '' ? filteredData : categories}
+        rowKey={(record) => record?.name}
         columns={[
           {
             title: '#',
@@ -97,8 +160,8 @@ const Categories = () => {
           },
           {
             title: "Name",
-            dataIndex: "title",
-            key: "title",
+            dataIndex: "name",
+            key: "name",
             width: 100,
           },
           {
@@ -106,6 +169,12 @@ const Categories = () => {
             dataIndex: "description",
             key: "description",
             width: 400,
+          },
+          {
+            title: "Order",
+            dataIndex: "order",
+            key: "order",
+            width: 100,
           },
           {
             title: 'Action',
@@ -131,7 +200,7 @@ const Categories = () => {
         isEdit={isEdit}
         data={isEdit ? rowData : null}
         visible={showEditModal}
-        handleSubmit={handleEdit}
+        handleSubmit={isEdit ? handleEdit : handleAdd}
         handleCancel={() => {
           console.log('cancel')
           setShowEditModal(false)

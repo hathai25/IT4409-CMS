@@ -1,5 +1,6 @@
 import {Form, Input, Modal} from "antd";
 import {useEffect} from "react";
+import Uploader from "../../../components/Uploader/index.jsx";
 
 const EditBannerForm = ({ data, handleSubmit, visible, handleCancel, isEdit=false }) => {
   const [form] = Form.useForm();
@@ -25,27 +26,24 @@ const EditBannerForm = ({ data, handleSubmit, visible, handleCancel, isEdit=fals
         form={form}
         initialValues={data}
       >
-        <Form.Item
-          label="Name"
-          name="title"
-          rules={[{required: true, message: 'Please input your banner!'}]}
-        >
-          <Input/>
-        </Form.Item>
-        <Form.Item
-          label="Image"
-          name="thumbnail"
-          rules={[{required: true, message: 'Please input your banner image!'}]}
-        >
-          <Input/>
-        </Form.Item>
-        <Form.Item
-          label="Description"
-          name="description"
-          rules={[{required: true, message: 'Please input your description!'}]}
-        >
-          <Input/>
-        </Form.Item>
+        {() => (
+          <>
+            <Form.Item
+              label="Image"
+              name="url"
+              rules={[{required: true, message: 'Please input your banner image!'}]}
+            >
+              <Uploader setFormValue={(value) => form.setFieldValue("url", value)}/>
+            </Form.Item>
+            <Form.Item
+              label="Description"
+              name="description"
+              rules={[{required: true, message: 'Please input your description!'}]}
+            >
+              <Input/>
+            </Form.Item>
+          </>
+        )}
       </Form>
     </Modal>
   )

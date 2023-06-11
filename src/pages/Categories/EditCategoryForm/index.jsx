@@ -1,4 +1,4 @@
-import {Form, Input, Modal} from "antd";
+import {Form, Input, InputNumber, Modal} from "antd";
 import {useEffect} from "react";
 
 const EditCategoryForm = ({ data, handleSubmit, visible, handleCancel, isEdit=false }) => {
@@ -27,7 +27,7 @@ const EditCategoryForm = ({ data, handleSubmit, visible, handleCancel, isEdit=fa
       >
         <Form.Item
           label="Name"
-          name="title"
+          name="name"
           rules={[{required: true, message: 'Please input your category!'}]}
         >
           <Input/>
@@ -38,6 +38,16 @@ const EditCategoryForm = ({ data, handleSubmit, visible, handleCancel, isEdit=fa
           rules={[{required: true, message: 'Please input your description!'}]}
         >
           <Input/>
+        </Form.Item>
+        <Form.Item
+          label="Order"
+          name="order"
+          rules={[
+            {required: true, message: 'Please input your order!'},
+            {type: 'number', message: 'Please input a number!'}
+          ]}
+        >
+          <InputNumber style={{width: "100%"}}/>
         </Form.Item>
       </Form>
     </Modal>

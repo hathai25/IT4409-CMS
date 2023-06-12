@@ -17,12 +17,17 @@ const Banner = () => {
   const [rowData, setRowData] = useState(null);
   const [isEdit, setIsEdit] = useState(false);
 
+  const initialFormValues = {
+    url: "",
+    description: "",
+  }
+
   const fetchBanners = () => {
     try {
       getAllBanner().then((res) => {
-        setBanner(res?.data?.products)
+        console.log({res})
+        setBanner(res?.data?.data)
       })
-      console.log("fetched")
     } catch (error) {
       notification.error({
         message: "Error",
@@ -59,7 +64,7 @@ const Banner = () => {
   const handleEdit = (data) => {
     try {
       updateBanner(rowData?.id, data).then((res) => {
-        if (res?.status === 201) {
+        if (res?.status === 200) {
           notification.success({
             message: "Success",
             description: "Banner updated successfully"
@@ -84,13 +89,13 @@ const Banner = () => {
   const handleDelete = () => {
     try {
       deleteBanner(rowData?.id).then((res) => {
-        if (res?.status === 201) {
+        if (res?.status === 200) {
           notification.success({
             message: "Success",
             description: "Banner deleted successfully"
           })
           fetchBanners()
-          setShowEditModal(false)
+          setShowDeleteModal(false)
         } else {
           notification.error({
             message: "Error",
@@ -140,6 +145,7 @@ const Banner = () => {
             type="primary"
             onClick={() => {
               setIsEdit(false)
+              setRowData(initialFormValues)
               setShowEditModal(true)
             }}
           >
@@ -160,12 +166,6 @@ const Banner = () => {
             width: 50,
           },
           {
-            title: "Name",
-            dataIndex: "title",
-            key: "title",
-            width: 100,
-          },
-          {
             title: "Image",
             dataIndex: "url",
             key: "url",
@@ -179,13 +179,6 @@ const Banner = () => {
             width: 300,
           },
           {
-            title: "Created At",
-            dataIndex: "price",
-            key: "price",
-            width: 100,
-            render: (value) => formatTime(value)
-          },
-          {
             title: 'Action',
             key: 'operation',
             fixed: 'right',
@@ -197,7 +190,10 @@ const Banner = () => {
                 setRowData(record)
                 setShowEditModal(true)
               }}><EditIcon style={{marginRight: 8}}/></span>
-              <span style={{cursor: "pointer"}} onClick={() => setShowDeleteModal(true)}><DeleteIcon/></span>
+              <span style={{cursor: "pointer"}} onClick={() => {
+                setRowData(record)
+                setShowDeleteModal(true)
+              }}><DeleteIcon/></span>
             </>,
           },
         ]}
@@ -207,11 +203,11 @@ const Banner = () => {
       />
       <EditBannerForm
         isEdit={isEdit}
-        data={isEdit ? rowData : null}
+        data={rowData}
         visible={showEditModal}
         handleSubmit={isEdit ? handleEdit : handleAdd}
         handleCancel={() => {
-          console.log('cancel')
+          setRowData(null)
           setShowEditModal(false)
         }}
       />
@@ -221,7 +217,7 @@ const Banner = () => {
         content={"Are you sure you want to delete this banner?"}
         handleDelete={handleDelete}
         handleCancel={() => {
-          console.log('cancel')
+          setRowData(null)
           setShowDeleteModal(false)
         }}
       />

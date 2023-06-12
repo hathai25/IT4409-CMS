@@ -5,9 +5,14 @@ const EditCategoryForm = ({ data, handleSubmit, visible, handleCancel, isEdit=fa
   const [form] = Form.useForm();
 
   useEffect(() => {
-    form.resetFields()
-    form.setFieldsValue(data)
-  }, [data, form])
+    if (isEdit) {
+      form.setFieldsValue(data)
+      form.validateFields()
+    } else {
+      form.resetFields()
+      form.setFieldsValue(data)
+    }
+  }, [data, form, isEdit])
 
   return (
     <Modal
@@ -23,32 +28,36 @@ const EditCategoryForm = ({ data, handleSubmit, visible, handleCancel, isEdit=fa
       <Form
         layout={"vertical"}
         form={form}
-        initialValues={isEdit ? data : null}
+        initialValues={data}
       >
-        <Form.Item
-          label="Name"
-          name="name"
-          rules={[{required: true, message: 'Please input your category!'}]}
-        >
-          <Input/>
-        </Form.Item>
-        <Form.Item
-          label="Description"
-          name="description"
-          rules={[{required: true, message: 'Please input your description!'}]}
-        >
-          <Input/>
-        </Form.Item>
-        <Form.Item
-          label="Order"
-          name="order"
-          rules={[
-            {required: true, message: 'Please input your order!'},
-            {type: 'number', message: 'Please input a number!'}
-          ]}
-        >
-          <InputNumber style={{width: "100%"}}/>
-        </Form.Item>
+        {() => (
+          <>
+            <Form.Item
+              label="Name"
+              name="name"
+              rules={[{required: true, message: 'Please input your category!'}]}
+            >
+              <Input/>
+            </Form.Item>
+            <Form.Item
+              label="Description"
+              name="description"
+              rules={[{required: true, message: 'Please input your description!'}]}
+            >
+              <Input/>
+            </Form.Item>
+            <Form.Item
+              label="Order"
+              name="order"
+              rules={[
+                {required: true, message: 'Please input your order!'},
+                {type: 'number', message: 'Please input a number!'}
+              ]}
+            >
+              <InputNumber style={{width: "100%"}}/>
+            </Form.Item>
+          </>
+        )}
       </Form>
     </Modal>
   )

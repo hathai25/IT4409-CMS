@@ -18,5 +18,5 @@ export const BANNER_API = {
   GET_ALL_BANNERS: '/sliders',
   ADD_BANNER: '/sliders',
   UPDATE_BANNER: '/sliders/:id',
-  DELETE_BANNER: '/sliders/trash/:id',
+  DELETE_BANNER: '/sliders/:id',
 }

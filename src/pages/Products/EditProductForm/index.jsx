@@ -5,9 +5,14 @@ const EditProductForm = ({ data, handleSubmit, visible, handleCancel, isEdit=fal
   const [form] = Form.useForm();
 
   useEffect(() => {
-    form.resetFields()
-    form.setFieldsValue(data)
-  }, [data, form])
+    if (isEdit) {
+      form.setFieldsValue(data)
+      form.validateFields()
+    } else {
+      form.resetFields()
+      form.setFieldsValue(data)
+    }
+  }, [data, form, isEdit])
 
   return (
     <Modal
@@ -25,48 +30,52 @@ const EditProductForm = ({ data, handleSubmit, visible, handleCancel, isEdit=fal
         form={form}
         initialValues={data}
       >
-        <Form.Item
-          label="Title"
-          name="title"
-          rules={[{required: true, message: 'Please input your title!'}]}
-        >
-          <Input/>
-        </Form.Item>
-        <Form.Item
-          label="Description"
-          name="description"
-          rules={[{required: true, message: 'Please input your description!'}]}
-        >
-          <Input/>
-        </Form.Item>
-        <Form.Item
-          label="Price"
-          name="price"
-          rules={[{required: true, message: 'Please input your price!'}]}
-        >
-          <Input/>
-        </Form.Item>
-        <Form.Item
-          label="Stock"
-          name="stock"
-          rules={[{required: true, message: 'Please input your stock!'}]}
-        >
-          <Input/>
-        </Form.Item>
-        <Form.Item
-          label="Thumbnail"
-          name="thumbnail"
-          rules={[{required: true, message: 'Please input your thumbnail!'}]}
-        >
-          <Input/>
-        </Form.Item>
-        <Form.Item
-          label="Images"
-          name="images"
-          rules={[{required: true, message: 'Please input your images!'}]}
-        >
-          <Input/>
-        </Form.Item>
+        {() => (
+          <>
+            <Form.Item
+              label="Title"
+              name="title"
+              rules={[{required: true, message: 'Please input your title!', }]}
+            >
+              <Input/>
+            </Form.Item>
+            <Form.Item
+              label="Description"
+              name="description"
+              rules={[{required: true, message: 'Please input your description!'}]}
+            >
+              <Input/>
+            </Form.Item>
+            <Form.Item
+              label="Price"
+              name="price"
+              rules={[{required: true, message: 'Please input your price!'}]}
+            >
+              <Input/>
+            </Form.Item>
+            <Form.Item
+              label="Stock"
+              name="stock"
+              rules={[{required: true, message: 'Please input your stock!'}]}
+            >
+              <Input/>
+            </Form.Item>
+            <Form.Item
+              label="Thumbnail"
+              name="thumbnail"
+              rules={[{required: true, message: 'Please input your thumbnail!'}]}
+            >
+              <Input/>
+            </Form.Item>
+            <Form.Item
+              label="Images"
+              name="images"
+              rules={[{required: true, message: 'Please input your images!'}]}
+            >
+              <Input/>
+            </Form.Item>
+          </>
+        )}
       </Form>
     </Modal>
   )

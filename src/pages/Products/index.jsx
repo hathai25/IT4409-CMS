@@ -17,6 +17,15 @@ const Products = () => {
   const [rowData, setRowData] = useState(null);
   const [isEdit, setIsEdit] = useState(false);
 
+  const initialFormValues = {
+    title: "",
+    description: "",
+    price: "",
+    thumbnail: "",
+    images: "",
+    stock: ""
+  }
+
   const fetchProducts = () => {
     try {
       getAllProducts().then((res) => {
@@ -77,6 +86,7 @@ const Products = () => {
             type="primary"
             onClick={() => {
               setIsEdit(false)
+              setRowData(initialFormValues)
               setShowEditModal(true)
             }}
           >
@@ -150,7 +160,7 @@ const Products = () => {
       />
       <EditProductForm
         isEdit={isEdit}
-        data={isEdit ? rowData : null}
+        data={rowData}
         visible={showEditModal}
         handleSubmit={handleEdit}
         handleCancel={() => {

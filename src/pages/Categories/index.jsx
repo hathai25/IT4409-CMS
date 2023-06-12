@@ -17,6 +17,12 @@ const Categories = () => {
   const [rowData, setRowData] = useState(null);
   const [isEdit, setIsEdit] = useState(false);
 
+  const initialFormValues = {
+    name: "",
+    description: "",
+    order: "",
+  }
+
   const fetchCategories = () => {
     try {
       getAllCategories().then((res) => {
@@ -139,6 +145,7 @@ const Categories = () => {
             type="primary"
             onClick={() => {
               setIsEdit(false)
+              setRowData(initialFormValues)
               setShowEditModal(true)
             }}
           >
@@ -198,7 +205,7 @@ const Categories = () => {
       />
       <EditCategoryForm
         isEdit={isEdit}
-        data={isEdit ? rowData : null}
+        data={rowData}
         visible={showEditModal}
         handleSubmit={isEdit ? handleEdit : handleAdd}
         handleCancel={() => {

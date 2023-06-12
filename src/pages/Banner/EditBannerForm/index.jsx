@@ -6,9 +6,14 @@ const EditBannerForm = ({ data, handleSubmit, visible, handleCancel, isEdit=fals
   const [form] = Form.useForm();
 
   useEffect(() => {
-    form.resetFields()
-    form.setFieldsValue(data)
-  }, [data, form])
+    if (isEdit) {
+      form.setFieldsValue(data)
+      form.validateFields()
+    } else {
+      form.resetFields()
+      form.setFieldsValue(data)
+    }
+  }, [data, form, isEdit])
 
   return (
     <Modal

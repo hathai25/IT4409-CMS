@@ -15,8 +15,10 @@ export const CATEGORY_API = {
 }
 
 export const BANNER_API = {
-  GET_ALL_BANNERS: '/sliders',
-  ADD_BANNER: '/sliders',
-  UPDATE_BANNER: '/sliders/:id',
-  DELETE_BANNER: '/sliders/:id',
-}
+  GET_ALL_BANNERS: "/sliders",
+  ADD_BANNER: "/sliders",
+  UPDATE_BANNER: "/sliders/:id",
+  DELETE_BANNER: "/sliders/:id",
+  UPDATE_BANNER_SHOW: "/sliders/:id",
+  UPDATE_BANNER_HIDDEN: "/sliders/:id",
+};

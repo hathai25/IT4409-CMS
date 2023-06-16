@@ -1,6 +1,8 @@
 import {Button, Col, Image, Input, notification, Row, Table} from "antd";
 import {useEffect, useState} from "react";
 import {EditIcon} from "../../assets/Icons/EditIcon.jsx";
+import {ShowIcon} from "../../assets/Icons/ShowIcon.jsx";
+import {HiddenIcon} from "../../assets/Icons/HiddenIcon.jsx";
 import {DeleteIcon} from "../../assets/Icons/DeleteIcon.jsx";
 import DeleteModal from "../../components/Modal/DeleteModal/index.jsx";
 import BannerModal from "../../components/Modal/DeleteModal/index.jsx";
@@ -236,15 +238,6 @@ const Banner = () => {
             width: 50,
             render: (text, record) => <>
               <span style={{cursor: "pointer"}} onClick={() => {
-                setIsEdit(true)
-                setRowData(record)
-                setShowEditModal(true)
-              }}><EditIcon style={{marginRight: 8}}/></span>
-              <span style={{cursor: "pointer"}} onClick={() => {
-                setRowData(record)
-                setShowDeleteModal(true)
-              }}><DeleteIcon/></span>
-              <span style={{cursor: "pointer"}} onClick={() => {
                 if(record.isShow === 1){
                   setShowHide(false)
                 }
@@ -253,7 +246,14 @@ const Banner = () => {
                 }
                 setRowData(record)
                 setShowBannerModal(true)
-              }}>{record.isShow === 1 ? "|Hidden" : "|Show"}</span>
+              }}>{record.isShow === 1 ? <> <span style={{cursor: "pointer"}} onClick={() => {
+                setIsEdit(true)
+                setRowData(record)
+                setShowEditModal(true)
+              }}><EditIcon style={{marginRight: 8}}/></span><ShowIcon/></> : <><span style={{cursor: "pointer"}} onClick={() => {
+                setRowData(record)
+                setShowDeleteModal(true)
+              }}><DeleteIcon/></span><HiddenIcon/></>}</span>
             </>,
           },
         ]}

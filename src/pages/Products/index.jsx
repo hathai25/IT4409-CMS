@@ -1,12 +1,13 @@
 import {Button, Col, Image, Input, notification, Row, Select, Table} from "antd";
 import {useEffect, useState} from "react";
-import {getAllProducts} from "../../services/product.service.js";
+import {createProduct, getAllProducts} from "../../services/product.service.js";
 import {formatCurrency} from "../../utils/string.js";
 import {DeleteFilled, EditFilled, PlusOutlined} from "@ant-design/icons";
 import {EditIcon} from "../../assets/Icons/EditIcon.jsx";
 import {DeleteIcon} from "../../assets/Icons/DeleteIcon.jsx";
 import DeleteModal from "../../components/Modal/DeleteModal/index.jsx";
-import EditProductForm from "./EditProductForm/index.jsx";
+import AddProductForm from "./AddProductForm/index.jsx";
+import {useNavigate} from "react-router-dom";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -16,6 +17,7 @@ const Products = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [rowData, setRowData] = useState(null);
   const [isEdit, setIsEdit] = useState(false);
+  const navigate = useNavigate();
 
   const initialFormValues = {
     title: "",
@@ -29,7 +31,8 @@ const Products = () => {
   const fetchProducts = () => {
     try {
       getAllProducts().then((res) => {
-        setProducts(res?.data?.products)
+        console.log(res)
+        setProducts(res?.data?.data?.items)
       })
       console.log("fetched")
     } catch (error) {
@@ -42,8 +45,25 @@ const Products = () => {
 
   const handleEdit = (data) => {
     console.log('ok', data)
-    setShowEditModal(false)
-    fetchProducts()
+    try {
+      createProduct(data).then((res) => {
+        console.log(res)
+        if (res.status === 201) {
+          notification.success({
+            message: 'Success',
+            description: 'Product created!',
+          })
+          setShowEditModal(false)
+          fetchProducts()
+        }
+      })
+    } catch (e) {
+      notification.error({
+        message: "Error",
+        description: "Product not created!"
+      })
+    }
+
   }
 
   const handleDelete = () => {
@@ -107,9 +127,9 @@ const Products = () => {
             width: 50,
           },
           {
-            title: "Title",
-            dataIndex: "title",
-            key: "title",
+            title: "Name",
+            dataIndex: "name",
+            key: "name",
             width: 100,
           },
           {
@@ -134,7 +154,7 @@ const Products = () => {
           },
           {
             title: "Quantity",
-            dataIndex: "stock",
+            dataIndex: "sellOfQuantity",
             key: "quantity",
             width: 100,
           },
@@ -146,9 +166,7 @@ const Products = () => {
             width: 100,
             render: (text, record) => <>
               <span style={{cursor: "pointer"}} onClick={() => {
-                setIsEdit(true)
-                setRowData(record)
-                setShowEditModal(true)
+                navigate(`/products/${record.id}`)
               }}><EditIcon style={{marginRight: 8}}/></span>
               <span style={{cursor: "pointer"}} onClick={() => setShowDeleteModal(true)}><DeleteIcon/></span>
             </>,
@@ -158,7 +176,7 @@ const Products = () => {
           pageSize: 5,
         }}
       />
-      <EditProductForm
+      <AddProductForm
         isEdit={isEdit}
         data={rowData}
         visible={showEditModal}

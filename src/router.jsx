@@ -5,6 +5,7 @@ import Banner from "./pages/Banner/index.jsx";
 import Users from "./pages/Users/index.jsx";
 import Orders from "./pages/Orders/index.jsx";
 import Payments from "./pages/Payments/index.jsx";
+import ProductDetail from "./pages/Products/ProductDetail/index.jsx";
 
 export const ROUTER = [
   {
@@ -14,6 +15,10 @@ export const ROUTER = [
   {
     path: '/products',
     element:  <Products />,
+  },
+  {
+    path: '/products/:id',
+    element: <ProductDetail />,
   },
   {
     path: '/categories',

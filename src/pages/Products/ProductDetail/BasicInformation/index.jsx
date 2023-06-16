@@ -1,31 +1,28 @@
-import {Form, Input, Modal} from "antd";
-import {useEffect} from "react";
+import {Form, Input} from "antd";
+import Uploader from "../../../../components/Uploader/index.jsx";
+import {useEffect, useState} from "react";
+import {getProductById} from "../../../../services/product.service.js";
 
-const EditProductForm = ({ data, handleSubmit, visible, handleCancel, isEdit=false }) => {
+const BasicInformation = ({id}) => {
+  const [data, setData] = useState()
   const [form] = Form.useForm();
 
   useEffect(() => {
-    if (isEdit) {
-      form.setFieldsValue(data)
-      form.validateFields()
-    } else {
-      form.resetFields()
-      form.setFieldsValue(data)
+    try {
+      getProductById(id).then((res) => {
+        console.log(res)
+        setData(res?.data?.data)
+      })
+    } catch {
+      console.log("error")
     }
-  }, [data, form, isEdit])
+  }, [id])
 
-  return (
-    <Modal
-      title={isEdit ? "Edit product" : "New product"}
-      open={visible}
-      onCancel={handleCancel}
-      onOk={() => {
-        form.validateFields().then(values => {
-          handleSubmit(values)
-        })
-      }}
-    >
-      <Form
+  console.log(data)
+
+  return(
+    <div>
+      {data && <Form
         layout={"vertical"}
         form={form}
         initialValues={data}
@@ -33,9 +30,9 @@ const EditProductForm = ({ data, handleSubmit, visible, handleCancel, isEdit=fal
         {() => (
           <>
             <Form.Item
-              label="Title"
-              name="title"
-              rules={[{required: true, message: 'Please input your title!', }]}
+              label="Name"
+              name="name"
+              rules={[{required: true, message: 'Please input your title!',}]}
             >
               <Input/>
             </Form.Item>
@@ -55,7 +52,7 @@ const EditProductForm = ({ data, handleSubmit, visible, handleCancel, isEdit=fal
             </Form.Item>
             <Form.Item
               label="Stock"
-              name="stock"
+              name="sellOfQuantity"
               rules={[{required: true, message: 'Please input your stock!'}]}
             >
               <Input/>
@@ -65,20 +62,13 @@ const EditProductForm = ({ data, handleSubmit, visible, handleCancel, isEdit=fal
               name="thumbnail"
               rules={[{required: true, message: 'Please input your thumbnail!'}]}
             >
-              <Input/>
-            </Form.Item>
-            <Form.Item
-              label="Images"
-              name="images"
-              rules={[{required: true, message: 'Please input your images!'}]}
-            >
-              <Input/>
+              <Uploader setFormValue={(value) => form.setFieldValue("thumbnail", value)}/>
             </Form.Item>
           </>
         )}
-      </Form>
-    </Modal>
+      </Form>}
+    </div>
   )
 }
 
-export default EditProductForm
+export default BasicInformation

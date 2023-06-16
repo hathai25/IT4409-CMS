@@ -26,7 +26,7 @@ const Banner = () => {
     try {
       getAllBanner().then((res) => {
         console.log({res})
-        setBanner(res?.data?.data)
+        setBanner(res?.data?.data?.items)
       })
     } catch (error) {
       notification.error({

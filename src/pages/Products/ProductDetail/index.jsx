@@ -1,0 +1,35 @@
+import {Tabs} from "antd";
+import BasicInformation from "./BasicInformation/index.jsx";
+import {useParams} from "react-router-dom";
+import ProductAttribute from "./ProductAttribute/index.jsx";
+import Media from "./Media/index.jsx";
+
+const ProductDetail = () => {
+  //get product id from url
+  const params = useParams()
+  const items = [
+    {
+      key: '1',
+      label: `Basic Information`,
+      children: <BasicInformation id={Number(params?.id)}/>
+    },
+    {
+      key: '2',
+      label: `Product Attributes`,
+      children: <ProductAttribute productId={Number(params?.id)}/>,
+    },
+    {
+      key: '3',
+      label: `Media`,
+      children: <Media productId={Number(params?.id)}/>,
+    },
+  ];
+
+  return (
+    <div>
+      <Tabs defaultActiveKey="1" items={items} />
+    </div>
+  )
+}
+
+export default ProductDetail

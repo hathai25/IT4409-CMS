@@ -64,7 +64,7 @@ const Categories = () => {
   const handleEdit = (data) => {
     try {
       updateCategory(rowData?.id, data).then((res) => {
-        if (res?.status === 201) {
+        if (res?.status === 200) {
           notification.success({
             message: "Success",
             description: "Category updated successfully"

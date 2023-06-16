@@ -3,6 +3,7 @@ import {useEffect, useState} from "react";
 import {EditIcon} from "../../assets/Icons/EditIcon.jsx";
 import {DeleteIcon} from "../../assets/Icons/DeleteIcon.jsx";
 import DeleteModal from "../../components/Modal/DeleteModal/index.jsx";
+import BannerModal from "../../components/Modal/DeleteModal/index.jsx";
 import {PlusOutlined} from "@ant-design/icons";
 import {formatTime} from "../../utils/string.js";
 import {addBanner, deleteBanner, getAllBanner, updateBanner,updateBannerShow,updateBannerHidden} from "../../services/banner.service.js";
@@ -13,9 +14,12 @@ const Banner = () => {
   const [searchText, setSearchText] = useState('');
   const [filteredData, setFilteredData] = useState([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showBannerModal, setShowBannerModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [rowData, setRowData] = useState(null);
   const [isEdit, setIsEdit] = useState(false);
+  const [showhide, setShowHide] = useState(true);
+
 
   const initialFormValues = {
     url: "",
@@ -232,23 +236,6 @@ const Banner = () => {
             width: 50,
             render: (text, record) => <>
               <span style={{cursor: "pointer"}} onClick={() => {
-                setRowData(record)
-                handleShow()
-              }}>Show</span>
-              <span style={{cursor: "pointer"}} onClick={() => {
-                setRowData(record)
-                handleHidden()
-              }}>/Hidden</span>
-            </>,
-          },
-          {
-            title: 'Action',
-            key: 'operation',
-            fixed: 'right',
-            align: 'right',
-            width: 50,
-            render: (text, record) => <>
-              <span style={{cursor: "pointer"}} onClick={() => {
                 setIsEdit(true)
                 setRowData(record)
                 setShowEditModal(true)
@@ -257,6 +244,16 @@ const Banner = () => {
                 setRowData(record)
                 setShowDeleteModal(true)
               }}><DeleteIcon/></span>
+              <span style={{cursor: "pointer"}} onClick={() => {
+                if(record.isShow === 1){
+                  setShowHide(false)
+                }
+                else {
+                  setShowHide(true)
+                }
+                setRowData(record)
+                setShowBannerModal(true)
+              }}>{record.isShow === 1 ? "|Hidden" : "|Show"}</span>
             </>,
           },
         ]}
@@ -282,6 +279,16 @@ const Banner = () => {
         handleCancel={() => {
           setRowData(null)
           setShowDeleteModal(false)
+        }}
+      />
+      <BannerModal
+        show={showBannerModal}
+        title={"Fix banner"}
+        content={showhide ? "Are you sure you want to show this banner?" :"Are you sure you want to hidden this banner?"}
+        handleFix={showhide ? handleShow : handleHidden}
+        handleCancel={() => {
+          setRowData(null)
+          setShowBannerModal(false)
         }}
       />
     </div>

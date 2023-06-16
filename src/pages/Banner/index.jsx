@@ -5,7 +5,7 @@ import {DeleteIcon} from "../../assets/Icons/DeleteIcon.jsx";
 import DeleteModal from "../../components/Modal/DeleteModal/index.jsx";
 import {PlusOutlined} from "@ant-design/icons";
 import {formatTime} from "../../utils/string.js";
-import {addBanner, deleteBanner, getAllBanner, updateBanner} from "../../services/banner.service.js";
+import {addBanner, deleteBanner, getAllBanner, updateBanner,updateBannerShow,updateBannerHidden} from "../../services/banner.service.js";
 import EditBannerForm from "./EditBannerForm/index.jsx";
 
 const Banner = () => {
@@ -23,7 +23,7 @@ const Banner = () => {
   }
 
   const fetchBanners = () => {
-    try {
+  try {
       getAllBanner().then((res) => {
         console.log({res})
         setBanner(res?.data?.data)
@@ -110,6 +110,52 @@ const Banner = () => {
       })
     }
   }
+  const handleShow = () => {
+    try {
+      updateBannerShow(rowData?.id).then((res) => {
+        if (res?.status === 200) {
+          notification.success({
+            message: "Success",
+            description: "Banner successfully"
+          })
+          fetchBanners()
+        } else {
+          notification.error({
+            message: "Error",
+            description: "Can't banner"
+          })
+        }
+      })
+    } catch (error) {
+      notification.error({
+        message: "Error",
+        description: "Can't banners"
+      })
+    }
+  }
+  const handleHidden = () => {
+    try {
+      updateBannerHidden(rowData?.id).then((res) => {
+        if (res?.status === 200) {
+          notification.success({
+            message: "Success",
+            description: "Banner successfully"
+          })
+          fetchBanners()
+        } else {
+          notification.error({
+            message: "Error",
+            description: "Can't banner"
+          })
+        }
+      })
+    } catch (error) {
+      notification.error({
+        message: "Error",
+        description: "Can't banners"
+      })
+    }
+  }
 
 
   useEffect(() => {
@@ -177,6 +223,23 @@ const Banner = () => {
             dataIndex: "description",
             key: "description",
             width: 300,
+          },
+          {
+            title: 'Action',
+            key: 'operation',
+            fixed: 'right',
+            align: 'right',
+            width: 50,
+            render: (text, record) => <>
+              <span style={{cursor: "pointer"}} onClick={() => {
+                setRowData(record)
+                handleShow()
+              }}>Show</span>
+              <span style={{cursor: "pointer"}} onClick={() => {
+                setRowData(record)
+                handleHidden()
+              }}>/Hidden</span>
+            </>,
           },
           {
             title: 'Action',

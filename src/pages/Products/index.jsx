@@ -1,6 +1,6 @@
-import {Button, Col, Image, Input, notification, Row, Select, Table} from "antd";
+import {Button, Col, Image, Input, notification, Row, Select, Table, Tag} from "antd";
 import {useEffect, useState} from "react";
-import {createProduct, getAllProducts} from "../../services/product.service.js";
+import {createProduct, deleteProduct, getAllProducts} from "../../services/product.service.js";
 import {formatCurrency} from "../../utils/string.js";
 import {DeleteFilled, EditFilled, PlusOutlined} from "@ant-design/icons";
 import {EditIcon} from "../../assets/Icons/EditIcon.jsx";
@@ -63,13 +63,27 @@ const Products = () => {
         description: "Product not created!"
       })
     }
-
   }
 
   const handleDelete = () => {
-    console.log('ok')
-    setShowDeleteModal(false)
-    fetchProducts()
+    try {
+      deleteProduct(rowData?.id).then((res) => {
+        console.log(res)
+        if (res.status === 200) {
+          notification.success({
+            message: 'Success',
+            description: 'Product deleted!',
+          })
+          setShowDeleteModal(false)
+          fetchProducts()
+        }
+      })
+    } catch (e) {
+      notification.error({
+        message: "Error",
+        description: "Product not deleted!"
+      })
+    }
   }
 
 
@@ -87,7 +101,6 @@ const Products = () => {
 
     setFilteredData(filteredDataSource);
   };
-
 
   return (
     <div>
@@ -140,6 +153,13 @@ const Products = () => {
             render: (value) => <Image src={value} width={160} height={90}/>
           },
           {
+            title: "Category",
+            dataIndex: "categories",
+            key: "categories",
+            width: 100,
+            render: (value) => value?.map((item) => <Tag color="blue">{item?.name}</Tag>)
+          },
+          {
             title: "Description",
             dataIndex: "description",
             key: "description",
@@ -166,9 +186,17 @@ const Products = () => {
             width: 100,
             render: (text, record) => <>
               <span style={{cursor: "pointer"}} onClick={() => {
-                navigate(`/products/${record.id}`)
+                console.log(record)
+                navigate(`/products/${record.id}`, {
+                  state: {
+                    productDetailId: record?.productDetail?.id
+                  }
+                })
               }}><EditIcon style={{marginRight: 8}}/></span>
-              <span style={{cursor: "pointer"}} onClick={() => setShowDeleteModal(true)}><DeleteIcon/></span>
+              <span style={{cursor: "pointer"}} onClick={() => {
+                setShowDeleteModal(true)
+                setRowData(record)
+              }}><DeleteIcon/></span>
             </>,
           },
         ]}

@@ -18,7 +18,7 @@ const Uploader = ({multiple=false, setFormValue}) => {
           console.log({res})
           if (res) {
             onSuccess(file);
-            const data = res?.data
+            const data = res?.data?.url
             setFormValue(data)
           } else {
             onError(`${file.name} file upload failed.`);

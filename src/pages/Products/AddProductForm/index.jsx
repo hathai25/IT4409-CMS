@@ -83,41 +83,15 @@ const AddProductForm = ({ data, handleSubmit, visible, handleCancel, isEdit=fals
               <InputNumber style={{width: "100%"}}/>
             </Form.Item>
             <Form.Item
-              label="Rate"
-              name="rate"
-              rules={[
-                {required: true, message: 'Please input your rate!'},
-                {type: 'number', message: 'Please input a number'}
-              ]}
-            >
-              <InputNumber style={{width: "100%"}}/>
-            </Form.Item>
-            <Form.Item
               label="Thumbnail"
               name="thumbnail"
               rules={[{required: true, message: 'Please input your thumbnail!'}]}
             >
-              <Uploader setFormValue={(data) => {
-                try {
-                  createMedia({
-                    description: data?.original_filename,
-                    url: data?.url,
-                    type: data?.format
-                  }).then(res => {
-                    if (res.status === 201) {
-                      form.setFieldValue("thumbnail", res?.data?.data)
-                    } else {
-                      message.error("Upload media failed")
-                    }
-                  })
-                } catch {
-                  message.error("Upload media failed")
-                }
-              }}/>
+              <Uploader setFormValue={(data) => form.setFieldValue("thumbnail", data)}/>
             </Form.Item>
             <Form.Item
               label="Category"
-              name="categories"
+              name="categoriesId"
               rules={[{required: true, message: 'Please input your title!', }]}
             >
               <Select

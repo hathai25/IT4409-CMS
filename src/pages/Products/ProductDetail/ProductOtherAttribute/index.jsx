@@ -1,35 +1,46 @@
-import {Button, Col, Image, Input, notification, Row, Table, Tag} from "antd";
+import {Button, Col, Image, Input, message, notification, Row, Table, Tag} from "antd";
 import {useEffect, useState} from "react";
 import {
-  createProductDefaultAttributes, deleteProductDefaultAttributes,
-  editProductDefaultAttributes,
-  getProductDefaultAttributes
+  createProductOtherAttributes,
+  createProductOtherAttributesValues, deleteProductDefaultAttributes, deleteProductOtherAttributesValues,
+  editProductDefaultAttributes, getAllOtherAttributes, getAllOtherAttributesValues, updateProductOtherAttributesValues,
 } from "../../../../services/product.service.js";
 import {EditIcon} from "../../../../assets/Icons/EditIcon.jsx";
 import AddAttribute from "./AddAttribute/index.jsx";
 import {DeleteIcon} from "../../../../assets/Icons/DeleteIcon.jsx";
 import BaseModal from "../../../../components/Modal/BaseModal/index.jsx";
+import NewAttribute from "./NewAttribute/index.jsx";
 
-const ProductAttribute = ({ productId }) => {
-  const [attributeList, setAttributeList] = useState([])
-  const [defaultAttributes, setDefaultAttributes] = useState([])
+const ProductOtherAttribute = ({ productId }) => {
+  const [otherAttributes, setOtherAttributes] = useState([])
   const [showAddAttribute, setShowAddAttribute] = useState(false)
+  const [selectAttribute, setSelectAttribute] = useState([])
   const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [showNewAttribute, setShowNewAttribute] = useState(false)
   const [isEdit, setIsEdit] = useState(false)
   const [rowData, setRowData] = useState(null)
 
   const initialDefaulValues = {
-    size: '',
-    color: '',
-    inventoryNumber: 0,
-    mediaId: ''
+    attributeId: '',
+    value: '',
+  }
+
+  const fetchProductOtherAttributes = () => {
+    try {
+      getAllOtherAttributes().then((res) => {
+        if (res.status === 200) setSelectAttribute(res?.data?.data?.items)
+        else message.error("Can't get attributes")
+      })
+    } catch (error) {
+      message.error("Can't get attributes")
+    }
   }
 
   const fetchProductDefaultAttributes = () => {
     try {
-      getProductDefaultAttributes(productId).then((res) => {
+      getAllOtherAttributesValues(productId).then((res) => {
         console.log(res?.data?.data)
-        setDefaultAttributes(res?.data?.data?.items)
+        setOtherAttributes(res?.data?.data?.items)
       })
     } catch (e) {
       console.log(e)
@@ -42,7 +53,7 @@ const ProductAttribute = ({ productId }) => {
 
   const handleAddAttribute = (data) => {
     try {
-      createProductDefaultAttributes({
+      createProductOtherAttributesValues({
         ...data,
         productDetailId: productId
       }).then((res) => {
@@ -67,11 +78,11 @@ const ProductAttribute = ({ productId }) => {
 
   const handleEditAttribute = (data) => {
     try {
-      editProductDefaultAttributes(rowData?.id, data).then((res) => {
+      updateProductOtherAttributesValues(rowData?.id, data).then((res) => {
         if (res.status === 200) {
           notification.success({
             message: 'Success',
-            description: 'Product attribute created!',
+            description: 'Product attribute updated!',
           })
           setShowAddAttribute(false)
           fetchProductDefaultAttributes()
@@ -89,7 +100,7 @@ const ProductAttribute = ({ productId }) => {
 
   const handleDeleteAttribute = () => {
     try {
-      deleteProductDefaultAttributes(rowData?.id).then((res) => {
+      deleteProductOtherAttributesValues(rowData?.id).then((res) => {
         if (res.status === 200) {
           notification.success({
             message: 'Success',
@@ -109,13 +120,36 @@ const ProductAttribute = ({ productId }) => {
     }
   }
 
+  const handleNewAttribute = (data) => {
+    try {
+      createProductOtherAttributes(data).then((res) => {
+        if (res.status === 201) {
+          notification.success({
+            message: 'Success',
+            description: 'Product attribute deleted!',
+          })
+          setShowNewAttribute(false)
+          fetchProductDefaultAttributes()
+          fetchProductOtherAttributes()
+        } else {
+          notification.error({
+            message: 'Error',
+            description: 'Something went wrong!',
+          })
+        }
+      })
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
   return(
     <div>
       <Row gutter={[32, 32]}>
         <Col span={24}>
           <Row>
             <Col span={12}>
-              <p>Default Attributes</p>
+              <p>Other Attributes</p>
             </Col>
             <Col span={12}>
               <Button
@@ -125,34 +159,29 @@ const ProductAttribute = ({ productId }) => {
                   setRowData(initialDefaulValues)
                   setShowAddAttribute(true)
                 }}
-                >Add attribute</Button>
+                >Add attribute value</Button>
+              <Button
+                style={{marginTop: 12, marginRight: 8, float: 'right'}}
+                onClick={() => {
+                  setShowNewAttribute(true)
+                }}
+              >Add attribute</Button>
             </Col>
           </Row>
           <Table
-            dataSource={defaultAttributes}
+            dataSource={otherAttributes}
             columns={[
               {
-                title: 'Size',
-                dataIndex: 'size',
-                key: 'size',
-                render: value => <Tag color="blue">{value}</Tag>
+                title: 'Attribute Name',
+                dataIndex: 'attributeId',
+                key: 'attributeId',
+                render: value => <Tag color="blue">{value?.name}</Tag>
               },
               {
-                title: 'Color',
-                dataIndex: 'color',
-                key: 'color',
-                render: value => <Tag color={value}>{value}</Tag>
-              },
-              {
-                title: 'Stock',
-                dataIndex: 'inventoryNumber',
-                key: 'inventoryNumber',
-              },
-              {
-                title: 'Media',
-                dataIndex: 'mediaId',
-                key: 'mediaId',
-                render: (value) => <Image src={value} width={50} height={50}/>,
+                title: 'Value',
+                dataIndex: 'value',
+                key: 'value',
+                render: value => <Tag color={"red"}>{value}</Tag>
               },
               {
                 title: 'Action',
@@ -192,16 +221,22 @@ const ProductAttribute = ({ productId }) => {
             content={<p>Are you sure you want to delete this attribute?</p>}
           />
           <AddAttribute
+            attributes={selectAttribute}
             isEdit={isEdit}
             visible={showAddAttribute}
             data={rowData}
             handleSubmit={isEdit ? handleEditAttribute : handleAddAttribute}
             handleCancel={() => setShowAddAttribute(false)}
             />
+          <NewAttribute
+            visible={showNewAttribute}
+            handleSubmit={handleNewAttribute}
+            handleCancel={() => setShowNewAttribute(false)}
+          />
         </Col>
       </Row>
     </div>
   )
 }
 
-export default ProductAttribute
+export default ProductOtherAttribute

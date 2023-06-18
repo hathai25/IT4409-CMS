@@ -38,7 +38,12 @@ const addInterceptor = (instant) => {
     (err) => {
         console.log('err', err)
       if (err.response?.status === 403) {
-        // window.location.href = '/login'
+        notification.error({
+          message: 'Error',
+          description: 'No permission',
+        })
+      } else if (err.response?.status === 401) {
+        window.location.href = '/login'
         notification.error({
           message: 'Phiên đăng nhập hết hạn',
           description: 'Vui lòng đăng nhập lại',

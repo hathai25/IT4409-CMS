@@ -1,11 +1,26 @@
-import {Form, Input} from "antd";
+import {Button, Form, Input, message, Select} from "antd";
 import Uploader from "../../../../components/Uploader/index.jsx";
 import {useEffect, useState} from "react";
-import {getProductById} from "../../../../services/product.service.js";
+import {getProductById, updateProduct} from "../../../../services/product.service.js";
+import {getAllCategories} from "../../../../services/category.service.js";
 
 const BasicInformation = ({id}) => {
   const [data, setData] = useState()
   const [form] = Form.useForm();
+  const [categories, setCategories] = useState([])
+
+  useEffect(() => {
+    try {
+      getAllCategories().then((res) => {
+        console.log(res)
+        if (res.status === 200) setCategories(res?.data?.data?.items)
+        else message.error("Can't get categories")
+      })
+    } catch (error) {
+      message.error("Can't get categories")
+    }
+  }, [])
+
 
   useEffect(() => {
     try {
@@ -18,14 +33,27 @@ const BasicInformation = ({id}) => {
     }
   }, [id])
 
-  console.log(data)
-
   return(
     <div>
       {data && <Form
         layout={"vertical"}
         form={form}
-        initialValues={data}
+        initialValues={{
+          ...data,
+          categoriesId: data?.categories?.map((item) => item?.id)
+        }}
+        onFinish={(values) => {
+            try {
+              updateProduct(id, values).then((res) => {
+                console.log(res)
+                if (res.status === 200) message.success("Updated")
+                else message.error("Can't update")
+              })
+              } catch (error) {
+                  message.error("Can't update")
+              }
+            }
+          }
       >
         {() => (
           <>
@@ -64,6 +92,28 @@ const BasicInformation = ({id}) => {
             >
               <Uploader setFormValue={(value) => form.setFieldValue("thumbnail", value)}/>
             </Form.Item>
+            <Form.Item
+              label="Category"
+              name="categoriesId"
+              rules={[{required: true, message: 'Please input your title!', }]}
+            >
+              <Select
+                mode="multiple"
+                allowClear
+                style={{
+                  width: '100%',
+                }}
+                placeholder="Please select category"
+                // onChange={handleChange}
+                options={[
+                  ...categories?.map((item) => ({
+                    label: item?.name,
+                    value: item?.id
+                  }))
+                ]}
+              />
+            </Form.Item>
+            <Button style={{float: "right"}} type="primary" htmlType="submit">Update</Button>
           </>
         )}
       </Form>}

@@ -48,6 +48,7 @@ const ProductOtherAttribute = ({ productId }) => {
   }
 
   useEffect(() => {
+    fetchProductOtherAttributes()
     fetchProductDefaultAttributes()
   }, [productId])
 

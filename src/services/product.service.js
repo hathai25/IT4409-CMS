@@ -40,6 +40,10 @@ export const updateProduct = async (id, data) => {
   return instanceCoreApi.patch(SHOP_API.UPDATE_PRODUCT.replace(':id', id), data)
 }
 
+export const updateProductDetails = async (id, data) => {
+  return instanceCoreApi.patch(SHOP_API.UPDATE_PRODUCT_DETAILS.replace(':id', id), data)
+}
+
 export const getAllOtherAttributes = async () => {
   return instanceCoreApi.get(SHOP_API.CREATE_PRODUCT_OTHER_ATTRIBUTES)
 }
@@ -71,3 +75,10 @@ export const deleteProductOtherAttributesValues = async (id) => {
   return instanceCoreApi.delete(SHOP_API.UPDATE_PRODUCT_OTHER_ATTRIBUTES_VALUES.replace(':id', id))
 }
 
+export const getProductMedia = async (id) => {
+  return instanceCoreApi.get(SHOP_API.GET_PRODUCT_MEDIA, {
+    params: {
+      productDetailId: id
+    }
+  })
+}

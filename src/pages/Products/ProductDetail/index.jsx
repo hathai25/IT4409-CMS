@@ -32,7 +32,7 @@ const ProductDetail = () => {
     {
       key: '4',
       label: `Media`,
-      children: <Media productId={Number(params?.id)}/>,
+      children: <Media productId={Number(state?.productDetailId)}/>,
     },
   ];
 

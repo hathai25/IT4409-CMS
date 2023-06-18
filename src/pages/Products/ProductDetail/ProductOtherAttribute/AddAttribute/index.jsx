@@ -3,7 +3,6 @@ import {useEffect, useState} from "react";
 import {getAllOtherAttributes} from "../../../../../services/product.service.js";
 const AddAttribute = ({ data, handleSubmit, visible, handleCancel, isEdit=false, attributes }) => {
   const [form] = Form.useForm();
-  const [otherAttributes, setOtherAttributes] = useState([])
 
 
   useEffect(() => {
@@ -15,7 +14,6 @@ const AddAttribute = ({ data, handleSubmit, visible, handleCancel, isEdit=false,
       form.setFieldsValue(data)
     }
   }, [data, form, isEdit])
-  console.log(data?.attributeId?.id)
 
   return (
     <Modal

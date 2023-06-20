@@ -84,7 +84,6 @@ const Media = ({ productId }) => {
     fetchMedia()
   }, [productId])
 
-  console.log({medias})
   const handleChange = ({ fileList: newFileList }) => {
     setMedias(newFileList);
   }

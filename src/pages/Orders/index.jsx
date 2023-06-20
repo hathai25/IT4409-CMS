@@ -1,65 +1,108 @@
-import {Button, Col, Image, Input, notification, Row, Select, Table, Tag} from "antd";
+import {Col, Input, notification, Row, Table, Tag} from "antd";
 import {useEffect, useState} from "react";
 import {getAllProducts} from "../../services/product.service.js";
-import {formatCurrency} from "../../utils/string.js";
-import {DeleteFilled, EditFilled, PlusOutlined, RiseOutlined} from "@ant-design/icons";
 import {EditIcon} from "../../assets/Icons/EditIcon.jsx";
-import {LockIcon} from "../../assets/Icons/LockIcon.jsx";
-import {UnlockIcon} from "../../assets/Icons/UnlockIcon.jsx";
-import LockModal from "../../components/Modal/LockModal/index.jsx";
-import UnlockModal from "../../components/Modal/UnlockModal/index.jsx";
 import EditOrderForm from "./EditOrderForm/index.jsx";
 import BaseModal from "../../components/Modal/BaseModal/index.jsx";
 import {RiseIcon} from "../../assets/Icons/RiseIcon.jsx";
+import {cancelOrder, getAllOrders, updateOrderStatus} from "../../services/order.service.js";
+import {formatCurrency} from "../../utils/string.js";
+import {InfoIcon} from "../../assets/Icons/InfoIcon.jsx";
+import OrderDetailModal from "./OrderDetailModal/index.jsx";
+import {DeleteIcon} from "../../assets/Icons/DeleteIcon.jsx";
+import DeleteModal from "../../components/Modal/DeleteModal/index.jsx";
+import {CancelIcon} from "../../assets/Icons/CancelIcon.jsx";
 
 const Orders = () => {
-  const [products, setProducts] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [showDetailModal, setShowDetailModal] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [filteredData, setFilteredData] = useState([]);
   const [showProcessModal, setShowProcessModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
   const [rowData, setRowData] = useState(null);
-  const [isEdit, setIsEdit] = useState(false);
 
-  const fetchProducts = () => {
+  const fetchOrders = () => {
     try {
-      getAllProducts().then((res) => {
-        setProducts(res?.data?.products)
+      getAllOrders().then((res) => {
+        setOrders(res?.data?.data?.items)
       })
-      console.log("fetched")
     } catch (error) {
       notification.error({
         message: "Error",
-        description: "Can't get users"
+        description: "Can't get orders"
       })
     }
   }
 
-  const handleEdit = (data) => {
-    console.log('ok', data)
-    setShowEditModal(false)
-    fetchProducts()
+  const handleCancel = () => {
+    try {
+      cancelOrder(rowData?.id).then(res => {
+        if (res?.status === 200) {
+          notification.success({
+            message: "Success",
+            description: "Cancel order successfully!"
+          })
+          setShowCancelModal(false)
+          fetchOrders()
+        } else {
+          notification.error({
+            message: "Error",
+            description: "Cancel order failed!"
+          })
+        }
+      })
+    } catch (error) {
+      notification.error({
+        message: "Error",
+        description: "Cancel order failed!"
+      })
+    }
   }
 
   const handleProcess = () => {
-    console.log('ok')
-    setShowProcessModal(false)
-    fetchProducts()
+    try {
+      const status = rowData?.status === "Prepared" ? "Delivering" : (rowData?.status === "Delivering" ? "Delivered" : (
+        rowData?.status === "Received" ? "Success" : "Prepared"
+      ))
+      updateOrderStatus(rowData?.id, status).then(res => {
+        if (res?.status === 200) {
+          notification.success({
+            message: "Success",
+            description: "Process order successfully!"
+          })
+          setShowProcessModal(false)
+          fetchOrders()
+        } else {
+          notification.error({
+            message: "Error",
+            description: "Process order failed!"
+          })
+        }
+      })
+    } catch (error) {
+      notification.error({
+        message: "Error",
+        description: "Process order failed!"
+      })
+    }
   }
 
   useEffect(() => {
-    fetchProducts()
+    fetchOrders()
   }, [])
 
   const handleSearch = (e) => {
     const value = e.target.value;
     setSearchText(value);
 
-    const filteredDataSource = products.filter((item) =>
-      item.title.toLowerCase().includes(value.toLowerCase())
+
+    const filteredDataSource = orders.filter((item) =>
+      item.status.toLowerCase().includes(value.toLowerCase())
     );
 
     setFilteredData(filteredDataSource);
+    console.log(filteredData)
   };
 
   return (
@@ -67,7 +110,7 @@ const Orders = () => {
       <Row justify={"space-between"} style={{margin: "2rem 0"}}>
         <Col span={12}>
           <Input
-            placeholder="Search by title"
+            placeholder="Search by status"
             size="large"
             onChange={handleSearch}
           />
@@ -75,7 +118,7 @@ const Orders = () => {
       </Row>
 
       <Table
-        dataSource={filteredData.length > 0 ? filteredData : products}
+        dataSource={filteredData.length >= 0 && searchText !== '' ? filteredData : orders}
         rowKey={(record) => record?.id}
         columns={[
           {
@@ -87,29 +130,50 @@ const Orders = () => {
           },
           {
             title: "Owner",
-            dataIndex: "title",
-            key: "title",
+            dataIndex: "owerId",
+            key: "owerId",
             width: 100,
+            render: (value) => <span style={{color: 'grey'}}>{value?.email} - {value?.phone}</span>
           },
           {
             title: "Status",
-            dataIndex: "stock",
-            key: "quantity",
+            dataIndex: "status",
+            key: "status",
             width: 50,
             render: (value) => {
-              //pending, processing, done
-              if (value > 0) {
-                return <Tag color="orange">Pending</Tag>
+              if (value === 'Prepared') {
+                return <Tag color="orange">Prepared</Tag>
+              } else if (value === 'Delivering') {
+                return <Tag color="blue">Delivering</Tag>
+              } else if (value === 'Delivered') {
+                return <Tag color="yellow">Delivered</Tag>
+              } else if (value === 'Received') {
+                return <Tag color="green">Received</Tag>
               } else {
-                return <Tag color="green">Done</Tag>
+                return <Tag color="red">Cancelled</Tag>
               }
             }
           },
           {
-            title: "Items",
-            dataIndex: "description",
-            key: "description",
-            width: 300,
+            title: "Created At",
+            dataIndex: "createdAt",
+            key: "createdAt",
+            width: 200,
+            render: (value) => <span style={{color: 'grey'}}>{new Date(value).toLocaleString()}</span>
+          },
+          {
+            title: "Last Updated",
+            dataIndex: "updatedAt",
+            key: "updatedAt",
+            width: 200,
+            render: (value) => <span style={{color: 'grey'}}>{new Date(value).toLocaleString()}</span>
+          },
+          {
+            title: "Total Money",
+            dataIndex: "totalMoney",
+            key: "totalMoney",
+            width: 100,
+            render: (value) => <span style={{color: '#1677FF'}}>{formatCurrency(value)}</span>
           },
           {
             title: 'Action',
@@ -118,16 +182,32 @@ const Orders = () => {
             align: 'right',
             width: 100,
             render: (text, record) => <>
-              {record?.stock > 0 &&
                 <>
+                  <span
+                    style={{cursor: "pointer"}}
+                    onClick={() => {
+                      setShowDetailModal(true)
+                      setRowData(record)
+                    }}
+                  >
+                    <InfoIcon style={{marginRight: 8}}/>
+                  </span>
+                  {record?.status === "Prepared" &&
                   <span style={{cursor: "pointer"}} onClick={() => {
-                    setIsEdit(true)
-                    setShowEditModal(true)
+                    setShowCancelModal(true)
                     setRowData(record)
-                  }}><EditIcon style={{marginRight: 8}}/></span>
-                  <span style={{cursor: "pointer"}} onClick={() => setShowProcessModal(true)}><RiseIcon/></span>
+                  }}><CancelIcon style={{marginRight: 8}}/></span>}
+                  {record?.status !== "Delivered" && record?.status !== "Received" && record?.status !== "Failure" && <span style={{
+                    cursor: "pointer", color: record?.status === "Prepared" ? "orange" : (
+                      record?.status === "Delivering" ? "blue" : "green" + "!important"
+                    )
+                  }} onClick={() => {
+                    setShowProcessModal(true)
+                    setRowData(record)
+                  }}>
+                    <RiseIcon/>
+                  </span>}
                 </>
-              }
             </>,
           },
         ]}
@@ -135,25 +215,28 @@ const Orders = () => {
           pageSize: 5,
         }}
       />
-      <EditOrderForm
-        isEdit={isEdit}
-        data={rowData}
-        visible={showEditModal}
-        handleSubmit={handleEdit}
+      <BaseModal
+        show={showCancelModal}
+        title={"Cancel Order"}
+        content={"Are you sure you want to cancel this order?"}
+        handleOk={handleCancel}
         handleCancel={() => {
-          console.log('cancel')
-          setShowEditModal(false)
+          setShowCancelModal(false)
         }}
       />
       <BaseModal
         show={showProcessModal}
         title={"Process Order"}
         content={"Are you sure you want to process this order?"}
-        handleDelete={handleProcess}
+        handleOk={handleProcess}
         handleCancel={() => {
-          console.log('cancel')
           setShowProcessModal(false)
         }}
+      />
+      <OrderDetailModal
+        showModal={showDetailModal}
+        handleCancel={() => setShowDetailModal(false)}
+        order_id={rowData?.id}
       />
     </div>
   )

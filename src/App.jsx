@@ -7,12 +7,22 @@ import setupAxiosDefault from "./services/setupAxios.js";
 setupAxiosDefault();
 
 function App() {
+  const token = localStorage.getItem("admin_token");
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
+    if (token) {
+      const payload = token?.split(".")[1];
+      const decodedPayload = atob(payload);
+      const {exp, roles} = JSON.parse(decodedPayload);
+      const expirationTime = (exp * 1000) - 60000;
+      const isExpired = Date.now() >= expirationTime;
+      if (isExpired) {
+        window.location.href = "/login";
+      }
+    }
+    else {
       window.location.href = "/login";
     }
-  }, []);
+  }, [token]);
 
   return (
     <div className="App">

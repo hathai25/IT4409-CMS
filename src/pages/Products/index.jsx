@@ -96,7 +96,7 @@ const Products = () => {
     setSearchText(value);
 
     const filteredDataSource = products.filter((item) =>
-      item.title.toLowerCase().includes(value.toLowerCase())
+      item.name.toLowerCase().includes(value.toLowerCase())
     );
 
     setFilteredData(filteredDataSource);
@@ -107,7 +107,7 @@ const Products = () => {
       <Row justify={"space-between"} style={{margin: "2rem 0"}}>
         <Col span={12}>
           <Input
-            placeholder="Search by title"
+            placeholder="Search by name"
             size="large"
             onChange={handleSearch}
           />
@@ -129,7 +129,7 @@ const Products = () => {
       </Row>
 
       <Table
-        dataSource={filteredData.length > 0 ? filteredData : products}
+        dataSource={filteredData.length > 0 && searchText !== '' ? filteredData : products}
         rowKey={(record) => record?.id}
         columns={[
           {

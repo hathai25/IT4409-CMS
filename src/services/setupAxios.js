@@ -11,7 +11,7 @@ const addInterceptor = (instant) => {
   instant.interceptors.request.use(
     (config) => {
       if (!config?.headers?.Authorization) {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('admin_token');
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         } else {
@@ -26,12 +26,12 @@ const addInterceptor = (instant) => {
   instant.interceptors.response.use(
     async (response) => {
       const {code} = response
-      console.log('response', response)
       if (code === 401 || (code === 500 && !response.config.headers.Authorization)) {
         notification.error({
           message: 'Phiên đăng nhập hết hạn',
           description: 'Vui lòng đăng nhập lại',
         })
+        localStorage.removeItem('admin_token')
       }
       return response;
     },
@@ -44,6 +44,7 @@ const addInterceptor = (instant) => {
         })
       } else if (err.response?.status === 401) {
         window.location.href = '/login'
+        localStorage.removeItem('admin_token')
         notification.error({
           message: 'Phiên đăng nhập hết hạn',
           description: 'Vui lòng đăng nhập lại',

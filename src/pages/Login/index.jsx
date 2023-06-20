@@ -12,13 +12,12 @@ const Login = () => {
     try {
       const result = await loginUser(values).then((res) => res);
       if (result?.status === 201) {
-        localStorage.setItem("token", result?.data?.access_token)
-        // dispatch(userLoginSuccess(result?.data?.access_token));
+        localStorage.setItem("admin_token", result?.data?.access_token)
         notification.success({
           message: 'Success',
           description: 'Login successfully!',
         });
-        navigate("/");
+        navigate("/products");
       }
     } catch (error) {
       console.log(error);

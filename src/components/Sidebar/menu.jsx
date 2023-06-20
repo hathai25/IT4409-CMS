@@ -50,45 +50,4 @@ export const MENU = [
     label: 'Quản lý thanh toán',
     type: null,
   },
-  {
-    label: 'Navigation Two',
-    path: '/dashboard',
-    icon: <AppstoreOutlined />,
-    key: 'z',
-    children: [
-      {
-        label: 'Option 9',
-        path: '/dashboard',
-        key: '9',
-        element: <></>
-      },
-      {
-        label: 'Option 10',
-        path: '/dashboard',
-        key: '10',
-        element: <></>
-      },
-      {
-        label: 'Submenu',
-        path: '/dashboard',
-        key: '11',
-        element: <></>,
-        children: [
-          {
-            label: 'Option 11',
-            path: '/dashboard',
-            key: '11',
-            element: <></>
-          },
-          {
-            label: 'Option 12',
-            path: '/dashboard',
-            key: '12',
-            element: <></>
-          }
-        ]
-      },
-    ],
-    element: <></>
-  },
 ]

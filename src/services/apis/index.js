@@ -35,3 +35,10 @@ export const BANNER_API = {
 export const MEDIA_API = {
   CREATE_MEDIA: '/medias'
 }
+
+export const ORDER_API = {
+  UPDATE_ORDER_STATUS: '/orders/:id',
+  GET_ALL_ORDERS: '/orders/management',
+  GET_ORDER_BY_ID: '/orders/management/:id',
+  CANCEL_ORDER: '/orders/admin/cancel/:id',
+}

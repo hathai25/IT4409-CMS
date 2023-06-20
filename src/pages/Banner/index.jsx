@@ -1,18 +1,24 @@
-import {Button, Col, Image, Input, notification, Row, Table} from "antd";
+import {Button, Col, Image, Input, notification, Row, Table, Tag} from "antd";
 import {useEffect, useState} from "react";
 import {EditIcon} from "../../assets/Icons/EditIcon.jsx";
 import {DeleteIcon} from "../../assets/Icons/DeleteIcon.jsx";
 import DeleteModal from "../../components/Modal/DeleteModal/index.jsx";
 import {PlusOutlined} from "@ant-design/icons";
 import {formatTime} from "../../utils/string.js";
-import {addBanner, deleteBanner, getAllBanner, updateBanner} from "../../services/banner.service.js";
+import {addBanner, deleteBanner, getAllBanner, hideBanner, updateBanner} from "../../services/banner.service.js";
 import EditBannerForm from "./EditBannerForm/index.jsx";
+import {LockIcon} from "../../assets/Icons/LockIcon.jsx";
+import {UnlockIcon} from "../../assets/Icons/UnlockIcon.jsx";
+import LockModal from "../../components/Modal/LockModal/index.jsx";
+import UnlockModal from "../../components/Modal/UnlockModal/index.jsx";
 
 const Banner = () => {
   const [banner, setBanner] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [filteredData, setFilteredData] = useState([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showHideModal, setShowHideModal] = useState(false);
+  const [showShowModal, setShowShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [rowData, setRowData] = useState(null);
   const [isEdit, setIsEdit] = useState(false);
@@ -111,6 +117,55 @@ const Banner = () => {
     }
   }
 
+  const handleHide = () => {
+    try {
+      hideBanner(rowData?.id, {isShow: false}).then((res) => {
+        if (res?.status === 200) {
+          notification.success({
+            message: "Success",
+            description: "Banner hided successfully"
+          })
+          fetchBanners()
+          setShowHideModal(false)
+        } else {
+          notification.error({
+            message: "Error",
+            description: "Can't hide banner"
+          })
+        }
+      })
+    } catch (error) {
+      notification.error({
+        message: "Error",
+        description: "Can't hide banners"
+      })
+    }
+  }
+  const handleShow = () => {
+    try {
+      hideBanner(rowData?.id, {isShow: true}).then((res) => {
+        if (res?.status === 200) {
+          notification.success({
+            message: "Success",
+            description: "Banner showed successfully"
+          })
+          fetchBanners()
+          setShowShowModal(false)
+        } else {
+          notification.error({
+            message: "Error",
+            description: "Can't show banner"
+          })
+        }
+      })
+    } catch (error) {
+      notification.error({
+        message: "Error",
+        description: "Can't show banners"
+      })
+    }
+  }
+
 
   useEffect(() => {
     fetchBanners()
@@ -173,6 +228,13 @@ const Banner = () => {
             render: (value) => <Image src={value} width={160} height={90}/>
           },
           {
+            title: "Status",
+            dataIndex: "isShow",
+            key: "url",
+            width: 100,
+            render: (value) => <Tag color={value ? "green" : "red"}>{value ? 'Show' : 'Hide'}</Tag>
+          },
+          {
             title: "Description",
             dataIndex: "description",
             key: "description",
@@ -185,15 +247,32 @@ const Banner = () => {
             align: 'right',
             width: 50,
             render: (text, record) => <>
-              <span style={{cursor: "pointer"}} onClick={() => {
-                setIsEdit(true)
-                setRowData(record)
-                setShowEditModal(true)
-              }}><EditIcon style={{marginRight: 8}}/></span>
-              <span style={{cursor: "pointer"}} onClick={() => {
-                setRowData(record)
-                setShowDeleteModal(true)
-              }}><DeleteIcon/></span>
+              {record?.isShow ?
+                <>
+                  <span style={{cursor: "pointer"}} onClick={() => {
+                    setIsEdit(true)
+                    setShowEditModal(true)
+                    setRowData(record)
+                  }}><EditIcon style={{marginRight: 8}}/></span>
+                  <span style={{cursor: "pointer"}} onClick={() => {
+                    setShowHideModal(true)
+                    setRowData(record)
+                  }}><LockIcon/></span>
+                </>
+                :
+                <>
+                  <span style={{cursor: "pointer"}} onClick={() => {
+                    setShowDeleteModal(true)
+                    setRowData(record)
+                  }}>
+                    <DeleteIcon style={{marginRight: 8}}/>
+                  </span>
+                  <span style={{cursor: "pointer"}} onClick={() => {
+                    setShowShowModal(true)
+                    setRowData(record)
+                  }}><UnlockIcon/></span>
+                </>
+              }
             </>,
           },
         ]}
@@ -219,6 +298,24 @@ const Banner = () => {
         handleCancel={() => {
           setRowData(null)
           setShowDeleteModal(false)
+        }}
+      />
+      <LockModal
+        show={showHideModal}
+        title={"Lock banner"}
+        content={"Are you sure you want to lock this banner?"}
+        handleDelete={handleHide}
+        handleCancel={() => {
+          setShowHideModal(false)
+        }}
+      />
+      <UnlockModal
+        show={showShowModal}
+        title={"Unlock banner"}
+        content={"Are you sure you want to unlock this banner?"}
+        handleDelete={handleShow}
+        handleCancel={() => {
+          setShowShowModal(false)
         }}
       />
     </div>

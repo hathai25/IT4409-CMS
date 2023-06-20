@@ -15,8 +15,10 @@ export const SHOP_API = {
 }
 
 export const USER_API = {
-  GET_ALL_USERS: '/users/get-all',
+  GET_ALL_USERS: '/users',
+  UPDATE_USER: '/users/:id',
   DELETE_USER: '/users/trash/:id',
+  GET_USER_ADDRESS: '/users/address/by-admin/:id',
 }
 
 export const CATEGORY_API = {
@@ -26,9 +28,10 @@ export const CATEGORY_API = {
 }
 
 export const BANNER_API = {
-  GET_ALL_BANNERS: '/sliders',
+  GET_ALL_BANNERS: '/sliders/management',
   ADD_BANNER: '/sliders',
   UPDATE_BANNER: '/sliders/:id',
+  HIDE_BANNER: '/sliders/show/:id',
   DELETE_BANNER: '/sliders/:id',
 }
 
@@ -50,4 +53,5 @@ export const ADMIN_API = {
   LOCK_ADMIN: '/admin/delete/:id',
   UNLOCK_ADMIN: '/admin/restore/:id',
   DELETE_ADMIN: '/admin/destroy/:id',
+  GET_DELETED_ADMIN: '/admin/trash',
 }

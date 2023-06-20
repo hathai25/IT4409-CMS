@@ -24,3 +24,7 @@ export const unlockAdmin = (id) => {
 export const deleteAdmin = (id) => {
   return instanceCoreApi.delete(ADMIN_API.DELETE_ADMIN.replace(':id', id));
 }
+
+export const getDeletedAdminList = () => {
+  return instanceCoreApi.get(ADMIN_API.GET_DELETED_ADMIN);
+}

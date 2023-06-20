@@ -1,4 +1,4 @@
-import {Form, Input, Modal} from "antd";
+import {Checkbox, Form, Input, Modal} from "antd";
 import {useEffect} from "react";
 
 const EditUserForm = ({ data, handleSubmit, visible, handleCancel, isEdit }) => {
@@ -26,32 +26,30 @@ const EditUserForm = ({ data, handleSubmit, visible, handleCancel, isEdit }) => 
         initialValues={data}
       >
         <Form.Item
-          label="Title"
-          name="title"
-          rules={[{required: true, message: 'Please input your username!'}]}
-        >
-          <Input/>
-        </Form.Item>
-        <Form.Item
-          label="Avatar"
-          name="thumbnail"
-          rules={[{required: true, message: 'Please input your thumbnail!'}]}
-        >
-          <Input/>
-        </Form.Item>
-        <Form.Item
           label="Phone"
-          name="description"
+          name="phone"
           rules={[{required: true, message: 'Please input your phone number!'}]}
         >
           <Input/>
         </Form.Item>
         <Form.Item
-          label="Address"
-          name="price"
+          label="Email"
+          name="email"
           rules={[{required: true, message: 'Please input your address!'}]}
         >
           <Input/>
+        </Form.Item>
+        <Form.Item
+          label="Active"
+          name="isActivity"
+          rules={[{required: true, message: 'Please input your username!'}]}
+        >
+          <Checkbox
+            checked={data?.isActivity}
+            onChange={(e) => {
+            console.log(e)
+            form.setFieldValue("isActivity", e?.target?.value)
+          }}/>
         </Form.Item>
       </Form>
     </Modal>

@@ -11,7 +11,7 @@ const EditAdminForm = ({ data, handleSubmit, visible, handleCancel, isEdit }) =>
 
   return (
     <Modal
-      title={isEdit ? "Edit user" : "New user"}
+      title={isEdit ? "Edit admin" : "New admin"}
       open={visible}
       onCancel={handleCancel}
       onOk={() => {

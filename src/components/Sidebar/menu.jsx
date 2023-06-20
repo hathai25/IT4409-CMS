@@ -4,7 +4,7 @@ import {
   DesktopOutlined,
   MailOutlined,
   PieChartOutlined, ShoppingCartOutlined,
-  UserOutlined, WalletOutlined
+  UserOutlined, UserSwitchOutlined, WalletOutlined
 } from "@ant-design/icons";
 
 export const MENU = [
@@ -34,6 +34,13 @@ export const MENU = [
     icon: <UserOutlined />,
     children: null,
     label: 'Quản lý người dùng',
+    type: null,
+  },
+  {
+    key: 'admin',
+    icon: <UserSwitchOutlined />,
+    children: null,
+    label: 'Quản lý admin',
     type: null,
   },
   {

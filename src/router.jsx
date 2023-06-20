@@ -6,6 +6,7 @@ import Users from "./pages/Users/index.jsx";
 import Orders from "./pages/Orders/index.jsx";
 import Payments from "./pages/Payments/index.jsx";
 import ProductDetail from "./pages/Products/ProductDetail/index.jsx";
+import Admin from "./pages/Admin/index.jsx";
 
 export const ROUTER = [
   {
@@ -39,5 +40,9 @@ export const ROUTER = [
   {
     path: '/payments',
     element:  <Payments />,
+  },
+  {
+    path: '/admin',
+    element:  <Admin />,
   },
 ]

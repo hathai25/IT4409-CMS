@@ -37,7 +37,16 @@ const AddAttribute = ({ data, handleSubmit, visible, handleCancel, isEdit=false 
               name="size"
               rules={[{required: true, message: 'Please input your size!', }]}
             >
-              <Input/>
+              <Select
+                placeholder="Select a size"
+                allowClear
+              >
+                <Select.Option value="s">S</Select.Option>
+                <Select.Option value="m">M</Select.Option>
+                <Select.Option value="l">L</Select.Option>
+                <Select.Option value="xl">XL</Select.Option>
+                <Select.Option value="xxl">XXL</Select.Option>
+              </Select>
             </Form.Item>
             <Form.Item
               label="Color"

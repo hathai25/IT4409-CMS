@@ -42,3 +42,12 @@ export const ORDER_API = {
   GET_ORDER_BY_ID: '/orders/management/:id',
   CANCEL_ORDER: '/orders/admin/cancel/:id',
 }
+
+export const ADMIN_API = {
+  GET_ALL_ADMIN: '/admin',
+  CREATE_ADMIN: '/admin/create',
+  UPDATE_ADMIN: '/admin/:id',
+  LOCK_ADMIN: '/admin/delete/:id',
+  UNLOCK_ADMIN: '/admin/restore/:id',
+  DELETE_ADMIN: '/admin/destroy/:id',
+}

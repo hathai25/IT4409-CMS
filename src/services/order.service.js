@@ -6,6 +6,7 @@ export const getAllOrders = async () => {
 }
 
 export const getOrderByDetail = async (id) => {
+  console.log({id})
   return instanceCoreApi.get(ORDER_API.GET_ORDER_BY_ID.replace(':id', id));
 }
 

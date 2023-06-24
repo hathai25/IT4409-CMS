@@ -10,6 +10,8 @@ import AddAttribute from "./AddAttribute/index.jsx";
 import {DeleteIcon} from "../../../../assets/Icons/DeleteIcon.jsx";
 import BaseModal from "../../../../components/Modal/BaseModal/index.jsx";
 import NewAttribute from "./NewAttribute/index.jsx";
+import useCallApi from "../../../../../hooks/useCallApi.js";
+import Spinner from "../../../../components/Spinner/index.jsx";
 
 const ProductOtherAttribute = ({ productId }) => {
   const [otherAttributes, setOtherAttributes] = useState([])
@@ -25,31 +27,29 @@ const ProductOtherAttribute = ({ productId }) => {
     value: '',
   }
 
-  const fetchProductOtherAttributes = () => {
-    try {
-      getAllOtherAttributes().then((res) => {
-        if (res.status === 200) setSelectAttribute(res?.data?.data?.items)
-        else message.error("Can't get attributes")
-      })
-    } catch (error) {
-      message.error("Can't get attributes")
+  const {send: fetchProductOtherAttributes} = useCallApi({
+    callApi: getAllOtherAttributes,
+    success: (res) => {
+      setSelectAttribute(res?.data?.items)
+    },
+    error: () => {
+      message.error("Can't get product default attributes")
     }
-  }
+  })
 
-  const fetchProductDefaultAttributes = () => {
-    try {
-      getAllOtherAttributesValues(productId).then((res) => {
-        console.log(res?.data?.data)
-        setOtherAttributes(res?.data?.data?.items)
-      })
-    } catch (e) {
-      console.log(e)
+  const { send: fetchProductDefaultAttributes, loading } = useCallApi({
+    callApi: getAllOtherAttributesValues,
+    success: (res) => {
+      setOtherAttributes(res?.data?.items)
+    },
+    error: () => {
+      message.error("Can't get product default attributes")
     }
-  }
+  })
 
   useEffect(() => {
     fetchProductOtherAttributes()
-    fetchProductDefaultAttributes()
+    fetchProductDefaultAttributes(productId)
   }, [productId])
 
   const handleAddAttribute = (data) => {
@@ -64,7 +64,7 @@ const ProductOtherAttribute = ({ productId }) => {
             description: 'Product attribute created!',
           })
           setShowAddAttribute(false)
-          fetchProductDefaultAttributes()
+          fetchProductDefaultAttributes(productId)
         } else {
           notification.error({
             message: 'Error',
@@ -86,7 +86,7 @@ const ProductOtherAttribute = ({ productId }) => {
             description: 'Product attribute updated!',
           })
           setShowAddAttribute(false)
-          fetchProductDefaultAttributes()
+          fetchProductDefaultAttributes(productId)
         } else {
           notification.error({
             message: 'Error',
@@ -146,7 +146,7 @@ const ProductOtherAttribute = ({ productId }) => {
 
   return(
     <div>
-      <Row gutter={[32, 32]}>
+      {loading ? <div style={{height: 600}}><Spinner/></div> : <Row gutter={[32, 32]}>
         <Col span={24}>
           <Row>
             <Col span={12}>
@@ -160,7 +160,7 @@ const ProductOtherAttribute = ({ productId }) => {
                   setRowData(initialDefaulValues)
                   setShowAddAttribute(true)
                 }}
-                >Add attribute value</Button>
+              >Add attribute value</Button>
               <Button
                 style={{marginTop: 12, marginRight: 8, float: 'right'}}
                 onClick={() => {
@@ -198,7 +198,7 @@ const ProductOtherAttribute = ({ productId }) => {
                         setRowData(record)
                         setShowAddAttribute(true)
                       }}
-                      >
+                    >
                       <EditIcon style={{marginRight: 8}}/>
                     </span>
                     <span
@@ -211,7 +211,8 @@ const ProductOtherAttribute = ({ productId }) => {
                       <DeleteIcon/>
                     </span>
                   </>
-              )}
+                )
+              }
             ]}
           />
           <BaseModal
@@ -228,14 +229,14 @@ const ProductOtherAttribute = ({ productId }) => {
             data={rowData}
             handleSubmit={isEdit ? handleEditAttribute : handleAddAttribute}
             handleCancel={() => setShowAddAttribute(false)}
-            />
+          />
           <NewAttribute
             visible={showNewAttribute}
             handleSubmit={handleNewAttribute}
             handleCancel={() => setShowNewAttribute(false)}
           />
         </Col>
-      </Row>
+      </Row>}
     </div>
   )
 }

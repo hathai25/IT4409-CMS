@@ -9,9 +9,6 @@ const ProductDetail = () => {
   //get product id from url
   const params = useParams()
   const { state } = useLocation()
-  console.log({state})
-
-
 
   const items = [
     {

@@ -3,37 +3,37 @@ import {getProductMedia, updateProductDetails} from "../../../../services/produc
 import {Button, message, notification, Upload} from "antd";
 import {PlusOutlined} from "@ant-design/icons";
 import axios from "axios";
+import useCallApi from "../../../../../hooks/useCallApi.js";
+import Spinner from "../../../../components/Spinner/index.jsx";
 
 const Media = ({ productId }) => {
   const [medias, setMedias] = useState([])
   const uploadInstance = axios.create()
 
-  const fetchMedia = () => {
-    try {
-      getProductMedia(productId).then((res) => {
-        console.log(res)
-        setMedias([
-          ...res?.data?.data?.medias?.map((item) => ({
-            uid: item,
-            name: item,
-            status: 'done',
-            url: item,
-          }))
-        ])
-      })
-    } catch (error) {
-      console.log(error)
+  const { send: fetchMedia, loading } = useCallApi({
+    callApi: getProductMedia,
+    success: (res) => {
+      setMedias([
+        ...res?.data?.medias?.map((item) => ({
+          uid: item,
+          name: item,
+          status: 'done',
+          url: item,
+        }))
+      ])
+    },
+    error: () => {
+      message.error("Can't get product media")
     }
-  }
+  })
 
   const handleSaveMedias = () => {
     try {
       updateProductDetails(productId, { medias: [
         ...medias?.map((item) => item?.url)
       ]}).then((res) => {
-        console.log(res)
         if (res.status === 200) {
-          fetchMedia()
+          fetchMedia(productId)
           notification.success({
             message: "Updated",
             description: "Media updated"
@@ -57,7 +57,6 @@ const Media = ({ productId }) => {
     try {
       uploadInstance.post("https://api.cloudinary.com/v1_1/dzazt6bib/image/upload", formData)
         .then(res => {
-          console.log({res})
           if (res) {
             onSuccess(file);
             const data = res?.data?.url
@@ -81,7 +80,7 @@ const Media = ({ productId }) => {
   }
 
   useEffect(() => {
-    fetchMedia()
+    fetchMedia(productId)
   }, [productId])
 
   const handleChange = ({ fileList: newFileList }) => {
@@ -90,6 +89,7 @@ const Media = ({ productId }) => {
 
   return(
     <div>
+      {loading ? <div style={{height: 600}}><Spinner/></div> : <>
       <Upload
         customRequest={handleUpload}
         listType="picture-card"
@@ -110,6 +110,7 @@ const Media = ({ productId }) => {
       <Button type="primary" onClick={handleSaveMedias}>
         Save
       </Button>
+      </>}
     </div>
   )
 }

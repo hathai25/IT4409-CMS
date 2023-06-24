@@ -3,39 +3,45 @@ import Uploader from "../../../../components/Uploader/index.jsx";
 import {useEffect, useState} from "react";
 import {getProductById, updateProduct} from "../../../../services/product.service.js";
 import {getAllCategories} from "../../../../services/category.service.js";
+import useCallApi from "../../../../../hooks/useCallApi.js";
+import Spinner from "../../../../components/Spinner/index.jsx";
 
 const BasicInformation = ({id}) => {
   const [data, setData] = useState()
   const [form] = Form.useForm();
   const [categories, setCategories] = useState([])
 
-  useEffect(() => {
-    try {
-      getAllCategories().then((res) => {
-        console.log(res)
-        if (res.status === 200) setCategories(res?.data?.data?.items)
-        else message.error("Can't get categories")
-      })
-    } catch (error) {
+  const { send: fetchCategories } = useCallApi({
+    callApi: getAllCategories,
+    success: (res) => {
+      setCategories(res?.data?.items)
+    },
+    error: () => {
       message.error("Can't get categories")
     }
-  }, [])
-
+  })
 
   useEffect(() => {
-    try {
-      getProductById(id).then((res) => {
-        console.log(res)
-        setData(res?.data?.data)
-      })
-    } catch {
-      console.log("error")
+    fetchCategories()
+  }, [])
+
+  const {send: fetchProductDetail, loading} = useCallApi({
+    callApi: getProductById,
+    success: (res) => {
+      setData(res?.data)
+    },
+    error: () => {
+      message.error("Can't get product")
     }
+  })
+
+  useEffect(() => {
+    fetchProductDetail(id)
   }, [id])
 
   return(
     <div>
-      {data && <Form
+      {loading ? <div style={{height: 600}}><Spinner/></div> : <Form
         layout={"vertical"}
         form={form}
         initialValues={{

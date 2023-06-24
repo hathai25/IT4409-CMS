@@ -150,7 +150,7 @@ const Products = () => {
             dataIndex: "thumbnail",
             key: "thumbnail",
             width: 100,
-            render: (value) => <Image src={value} width={160} height={90}/>
+            render: (value) => <Image src={value} width={90} height={160}/>
           },
           {
             title: "Category",
@@ -210,7 +210,6 @@ const Products = () => {
         visible={showEditModal}
         handleSubmit={handleEdit}
         handleCancel={() => {
-          console.log('cancel')
           setShowEditModal(false)
         }}
       />
@@ -220,7 +219,6 @@ const Products = () => {
         content={"Are you sure you want to delete this product?"}
         handleDelete={handleDelete}
         handleCancel={() => {
-          console.log('cancel')
           setShowDeleteModal(false)
         }}
       />

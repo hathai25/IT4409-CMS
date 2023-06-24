@@ -14,7 +14,7 @@ const Layout = ({children}) => {
     ...MAP_PATHNAME_TO_BREADCRUMB.filter(item => item.href === pathname)
   ]
 
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("admin_token");
 
   useEffect(() => {
     if (!token) {

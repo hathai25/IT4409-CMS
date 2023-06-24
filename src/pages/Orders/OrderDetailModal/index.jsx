@@ -9,7 +9,6 @@ const OrderDetailModal = ({ order_id, showModal, handleCancel }) => {
     try {
       getOrderByDetail(order_id).then(res => {
         if (res?.status === 200) {
-          console.log(res?.data?.data)
           setOrders(res?.data?.data)
         } else {
           notification.error({
@@ -27,7 +26,6 @@ const OrderDetailModal = ({ order_id, showModal, handleCancel }) => {
     fetchOrderDetail()
   }, [order_id])
 
-  console.log({showModal})
 
   return(
     <Modal
@@ -49,7 +47,7 @@ const OrderDetailModal = ({ order_id, showModal, handleCancel }) => {
                   <Col span={16}>
                     <p>{order?.productAttributeDefault?.productDetailId?.productId?.name} <b>x {order?.number}</b></p>
                     <p><Tag color={"blue"}>{order?.productAttributeDefault?.size}</Tag> - <Tag
-                      color={order?.productAttributeDefault?.color}>{order?.productAttributeDefault?.color}</Tag></p>
+                      color={order?.productAttributeDefault?.color} style={order?.productAttributeDefault?.color === "white" && {color: "black", borderColor: "black"}}>{order?.productAttributeDefault?.color}</Tag></p>
                   </Col>
                 </Row>
               </Col>

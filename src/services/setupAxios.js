@@ -2,8 +2,7 @@ import axios from 'axios';
 import {notification} from "antd";
 import {useNavigate} from "react-router-dom";
 
-// const CORE_API = import.meta.env.VITE_PUBLIC_API_BASE_URL;
-const CORE_API = 'http://localhost:3001';
+const CORE_API = import.meta.env.VITE_PUBLIC_API_BASE_URL;
 
 axios.defaults.headers.common['Accept'] = 'application/json';
 

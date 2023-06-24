@@ -37,10 +37,13 @@ const addInterceptor = (instant) => {
     (err) => {
         console.log('err', err)
       if (err.response?.status === 403) {
-        notification.error({
-          message: 'Error',
-          description: 'No permission',
-        })
+        const token = localStorage.getItem('admin_token');
+        if (token) {
+          notification.error({
+            message: 'Error',
+            description: 'No permission',
+          })
+        }
       } else if (err.response?.status === 401) {
         window.location.href = '/login'
         localStorage.removeItem('admin_token')

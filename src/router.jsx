@@ -7,6 +7,7 @@ import Orders from "./pages/Orders/index.jsx";
 import Payments from "./pages/Payments/index.jsx";
 import ProductDetail from "./pages/Products/ProductDetail/index.jsx";
 import Admin from "./pages/Admin/index.jsx";
+import Login from "./pages/Login/index.jsx";
 
 export const ROUTER = [
   {
@@ -44,5 +45,9 @@ export const ROUTER = [
   {
     path: '/admin',
     element:  <Admin />,
+  },
+  {
+    path: '/login',
+    element:  <Login />,
   },
 ]

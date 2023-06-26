@@ -46,8 +46,4 @@ export const ROUTER = [
     path: '/admin',
     element:  <Admin />,
   },
-  {
-    path: '/login',
-    element:  <Login />,
-  },
 ]

@@ -41,7 +41,7 @@ const Layout = ({children}) => {
           }}>
             <span onClick={() => {
               localStorage.removeItem("admin_token");
-              window.location.href = "/login";
+              window.location.href = "/";
               notification.success({
                 message: "Success",
                 description: "Logout success!"
